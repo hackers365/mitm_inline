@@ -5,6 +5,12 @@
         <title>sqlmap注入管理系统</title>
         <link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css">
         <link rel="stylesheet" type="text/css" href="/css/bootstrap-theme.min.css">
+        <style>
+            .popover {
+                max-width: 800px;
+                text-align: left;
+            }
+        </style>
     </head>
 
     <body>
@@ -19,15 +25,25 @@
         <th>操作</th>
         <?php
             foreach($task_list as $task_id => $task_info) {
-                echo "<tr class=\"_log\" task_id=\"{$task_id}\">";
-                    echo "<td class=\"\" style=\"max-width: 300px;word-wrap: break-word;\">{$task_info['url']}</td>";
+                echo "<tr task_id=\"{$task_id}\">";
+                    echo "<td class=\"_log\" class=\"\" style=\"max-width: 300px;word-wrap: break-word;\">
+                            <a target=\"_blank\" href=\"/task/{$task_id}/log\">{$task_info['url']}</a>
+                        </td>";
                     if (!empty($task_info['stop'])) {
-                        $status = '正在运行.';
-                    } else {
                         $status = '已停止.';
+                    } else {
+                        $status = '正在运行.';
                     }
                     echo "<td style=\"width:200px;\">{$status}</td>";
-                    echo "<td><button class=\"_stop btn btn-success\">启动</button><button class=\"_stop btn btn-info\">停止</button><button type=\"button\" class=\"_delete btn btn-danger\">删除</button></td>";
+                    echo "<td>
+                        <!--
+                            <button action=\"start\" class=\"_action btn btn-success\">启动</button>
+                        -->
+                        <button action=\"stop\" class=\"_action btn btn-info\">停止</button>
+                        <!--
+                            <button action=\"kill\" type=\"button\" class=\"_action btn btn-danger\">删除</button>
+                        -->
+                    </td>";
                 echo '</tr>';
             }
         ?>
@@ -37,11 +53,27 @@
         <script src="/js/jquery.min.js"></script>
         <script src="/js/bootstrap.min.js"></script>
         <script>
+            //~ function request(url, ) {
+//~
+            //~ }
             $(document)
-            .on('click', 'tr._log', function(e) {
-                var task_id = $(this).attr('task_id');
+            /*
+            .on('click', 'td._log', function(e) {
                 $.getJSON('/api/' + task_id + '/log', function(data) {
-                    console.log(data);
+                    var str = '';
+                    for(var i=0;i<data.log.length;i++) {
+                        str = str + data.log[i]['time'] + ':' + data.log[i]['level'] + '    ' + data.log[i]['message'] + "<br>";
+                    }
+                });
+            })
+            */
+            .on('click', '._action', function(e) {
+                var $this = $(this),
+                    task_id = $this.parents('tr[task_id]').attr('task_id'),
+                    action = $this.attr('action');
+                    url = '/api/' + task_id + '/' + action;
+                $.getJSON(url, function(data) {
+                    alert('操作成功.');
                 });
             });
 

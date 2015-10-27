@@ -105,6 +105,7 @@ def task_new(target_url, options=None):
     options['url'] = target_url
     options['stopFail'] = True
     options['randomAgent'] = True
+    options['getCurrentDb'] = True
     url = prefix + '/scan/' + task_id + '/start'
     response = curl_sqlmap('post', url, json.dumps(options))
 
